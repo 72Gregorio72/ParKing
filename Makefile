@@ -38,3 +38,6 @@ re: clean all
 
 test: all
 	./$(TARGET) includes/lib.h
+
+valgrind: all
+	valgrind --leak-check=full --track-origins=yes --show-leak-kinds=all ./$(TARGET) includes/lib.h

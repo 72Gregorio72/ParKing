@@ -5,8 +5,6 @@ int main() {
     const unsigned int windowHeight = 720;
 
 	Player player = Player();
-	player.setX(static_cast<int>(windowWidth / 2));
-	player.setY(static_cast<int>(windowHeight / 2));
 
     sf::RenderWindow window(
         sf::VideoMode({windowWidth, windowHeight}),
@@ -14,6 +12,10 @@ int main() {
         sf::Style::Close
     );
     window.setVerticalSyncEnabled(true);
+
+	data mapData = parseMap("levels/1.txt");
+
+	player.setMapData(mapData);
 
     while (window.isOpen()) {
         while (const auto event = window.pollEvent()) {
@@ -24,6 +26,7 @@ int main() {
 
         window.clear(sf::Color::Black);
 		player.playerLoop(window);
+		drawMap(window, mapData);
 		player.draw(window);
         window.display();
     }

@@ -9,6 +9,7 @@ class Player {
 		void draw(sf::RenderWindow& window);
 		void getInput(sf::RenderWindow& window);
 		void playerLoop(sf::RenderWindow& window);
+		void checkCollision();
 
 		int getX() const { return x; }
 		int getY() const { return y; }
@@ -21,6 +22,7 @@ class Player {
 		void setSpeed(int ns) { speed = ns; }
 		void setMaxHP(int mh) { maxHP = mh; }
 		void setCurrentHP(int ch) { currentHP = ch; }
+		void setMapData(const data& md) { mapData = md; }
 
 	private:
 		int x;
@@ -28,4 +30,8 @@ class Player {
 		int speed;
 		int maxHP;
 		int currentHP;
+		const int gravity = 1;
+		const float hitboxWidth = 50.0f;
+		const float hitboxHeight = 50.0f;
+		data mapData;
 };
