@@ -1,6 +1,13 @@
 CXX := g++
-CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -O2 -Iincludes
-LDFLAGS := -lsfml-graphics -lsfml-window -lsfml-system
+SFML_CFLAGS := $(shell pkg-config --cflags sfml-graphics sfml-window sfml-system 2>/dev/null)
+SFML_LIBS := $(shell pkg-config --libs sfml-graphics sfml-window sfml-system 2>/dev/null)
+
+ifeq ($(strip $(SFML_LIBS)),)
+SFML_LIBS := -L/usr/local/lib -lsfml-graphics-s -lsfml-window-s -lsfml-system-s
+endif
+
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -O2 -Iincludes $(SFML_CFLAGS)
+LDFLAGS := $(SFML_LIBS)
 
 SRC_DIR := src
 CLASS_DIR := classes

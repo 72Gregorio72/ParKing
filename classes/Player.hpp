@@ -7,8 +7,8 @@ class Player {
 	public:
 		Player();
 		void draw(sf::RenderWindow& window);
-		void getInput(const sf::Event& event, sf::RenderWindow& window);
-		void playerLoop(const sf::Event& event, sf::RenderWindow& window);
+		void getInput(sf::RenderWindow& window);
+		void playerLoop(sf::RenderWindow& window);
 
 		int getX() const { return x; }
 		int getY() const { return y; }
@@ -28,12 +28,4 @@ class Player {
 		int speed;
 		int maxHP;
 		int currentHP;
-
-		// simple physics
-		float vy;
-		float gravity;
-		float jumpVelocity;
-		int width;
-		int height;
-		bool onGround;
 };

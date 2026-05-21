@@ -9,22 +9,21 @@ int main() {
 	player.setY(static_cast<int>(windowHeight / 2));
 
     sf::RenderWindow window(
-        sf::VideoMode(windowWidth, windowHeight),
+        sf::VideoMode({windowWidth, windowHeight}),
         "ParKing - SFML Platformer Starter",
         sf::Style::Close
     );
     window.setVerticalSyncEnabled(true);
 
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
+        while (const auto event = window.pollEvent()) {
+            if (event->is<sf::Event::Closed>()) {
                 window.close();
             }
         }
 
         window.clear(sf::Color::Black);
-		player.playerLoop(event, window);
+		player.playerLoop(window);
 		player.draw(window);
         window.display();
     }
