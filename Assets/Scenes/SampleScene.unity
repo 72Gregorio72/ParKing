@@ -178,7 +178,7 @@ PrefabInstance:
     - target: {fileID: 7574984356411414343, guid: 35e3487f3577c2e4f95b2aeb51a46527, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 378830621}
+      objectReference: {fileID: 0}
     - target: {fileID: 7574984356411414343, guid: 35e3487f3577c2e4f95b2aeb51a46527, type: 3}
       propertyPath: meleeRange
       value: 10
@@ -188,11 +188,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35e3487f3577c2e4f95b2aeb51a46527, type: 3}
---- !u!4 &378830621 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3777217518830976314, guid: 151474d66e307644c86908641b949a99, type: 3}
-  m_PrefabInstance: {fileID: 973882799}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -480,6 +475,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &796334939
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -525,6 +521,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -534,7 +531,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &796334940
 Transform:
@@ -559,6 +555,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3529743617835712329, guid: 151474d66e307644c86908641b949a99, type: 3}
+      propertyPath: currentWeapon
+      value: 
+      objectReference: {fileID: 242161255361597794, guid: 4896b936ce3aa7848bd7e4b613e6c7da, type: 3}
     - target: {fileID: 3777217518830976314, guid: 151474d66e307644c86908641b949a99, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -678,6 +678,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1031726684
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -723,6 +724,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -732,7 +734,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1031726685
 Transform:
@@ -815,6 +816,7 @@ BoxCollider2D:
   m_EdgeRadius: 0
 --- !u!212 &1565101289
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -860,6 +862,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -869,7 +872,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &1565101290
 Transform:
