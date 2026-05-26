@@ -1,39 +1,55 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-	public int maxHealth = 100;
+    public int maxHealth = 3;
+    public int currentHealth;
 
-	public int currentHealth;
+    [SerializeField] private Slider healthSlider;
 
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-	void Start()
+    void Start()
     {
         currentHealth = maxHealth;
+        UpdateUI();
     }
 
-	// Update is called once per frame
-	void Update()
-	{
+    public void TakeDamage(int damageAmount)
+    {
+        currentHealth -= 1;
+        Debug.Log("Player Health: " + currentHealth);
 
-	}
+        UpdateUI();
 
-	public void TakeDamage(int damageAmount)
-	{
-		currentHealth -= damageAmount;
-		Debug.Log("Player Health: " + currentHealth);
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
 
-		if (currentHealth <= 0)
-		{
-			Die();
-		}
+        Debug.Log("Player took " + damageAmount + " damage.");
+    }
 
-		Debug.Log("Player took " + damageAmount + " damage.");
-	}
-	
-	void Die()
-	{
-		Debug.Log("Player has died!");
-		// Add death logic here (e.g., respawn, game over screen, etc.)
-	}
+    private void UpdateUI()
+    {
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+    }
+
+    void Die()
+    {
+        Debug.Log("Player has died!");
+        // Add death logic here (e.g., respawn, game over screen, etc.)
+    }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        Debug.Log("OnTriggerEnter2D called with: " + collider.gameObject.name + " (tag: " + collider.gameObject.tag + ")");
+        if (collider.gameObject.CompareTag("Boss") || collider.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage(1);
+        }
+    }
 }

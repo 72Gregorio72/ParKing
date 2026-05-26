@@ -10,7 +10,7 @@ public class Enemy : MonoBehaviour
         parentRoom = room;
     }
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         health -= damage;
         if (health <= 0)
@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void Die()
+    protected virtual void Die()
     {
         if (parentRoom != null)
         {

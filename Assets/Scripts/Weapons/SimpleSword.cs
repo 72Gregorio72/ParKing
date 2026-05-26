@@ -6,18 +6,26 @@ public class SimpleSword : Weapon
     [SerializeField] private float range = 1.5f;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private GameObject attackPoint;
+    
+    private float attackVisualizationDuration = 0.5f;
 
     private void Start()
     {
         if (attackPoint == null)
         {
-            attackPoint = transform.Find("AttackPoint")?.gameObject;
+            attackPoint = transform.root.Find("AttackPoint")?.gameObject;
+			if (attackPoint == null)
+			{
+				Debug.LogWarning("SimpleSword: No AttackPoint found. Using weapon's position as attack center.");
+			}
         }
     }
 
     public override void Attack()
     {
         if (!CanAttack()) return;
+        
+        lastAttackTime = Time.time;
         
         // Circular overlap check for damage centered at attack point
         Vector3 attackPosition = attackPoint != null ? attackPoint.transform.position : transform.position;
@@ -38,8 +46,12 @@ public class SimpleSword : Weapon
 
     private void OnDrawGizmosSelected()
     {
-        Vector3 gizmoPosition = attackPoint != null ? attackPoint.transform.position : transform.position;
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(gizmoPosition, range);
+        // Mostra il gizmo solo se l'attacco è stato fatto di recente
+        if (Time.time - lastAttackTime < attackVisualizationDuration)
+        {
+            Vector3 gizmoPosition = attackPoint != null ? attackPoint.transform.position : transform.position;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(gizmoPosition, range);
+        }
     }
 }

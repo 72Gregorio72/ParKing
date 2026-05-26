@@ -20,8 +20,14 @@ public class BossScriptTemplate : MonoBehaviour
     [Header("Parametri Attacchi")]
     [SerializeField] private float attackCooldown = 3f;
     [SerializeField] private float dashForce = 15f;
+    [SerializeField] private float projectileSpeed = 18f;
+    [SerializeField] private float jumpForce = 12f;
+    [SerializeField] private float rangedAttackRange = 5f;
+    [SerializeField] private GameObject fallingCubePrefab;
+    
     private float cooldownTimer;
     private bool isAttacking = false;
+    private int lastAttackType = -1;
 
     // Stati del Boss
     private enum BossState { Idle, Chasing, Attacking }
@@ -97,23 +103,45 @@ public class BossScriptTemplate : MonoBehaviour
         }
     }
 
-    // Coroutine per la scelta e l'esecuzione dell'attacco (stile Hollow Knight)
+    // Coroutine per la scelta e l'esecuzione dell'attacco
     private IEnumerator SelectAttackRoutine()
     {
         isAttacking = true;
         rb.linearVelocity = Vector2.zero; // Si ferma prima di attaccare
         currentState = BossState.Attacking;
 
-        // Scegli casualmente tra attacco 1 e attacco 2
-        int randomAttack = Random.Range(0, 2);
+        float distanceToPlayer = Vector2.Distance(transform.position, player.position);
+        int attackType;
 
-        if (randomAttack == 0)
+        // Logica intelligente: sceglie l'attacco in base alla distanza, evitando di ripetere lo stesso attacco
+        if (distanceToPlayer < meleeRange + 1.5f)
         {
-            yield return StartCoroutine(MeleeDashAttack());
+            // Se vicino: Dash o Jump Slam (ma non lo stesso del turno precedente)
+            attackType = Random.value > 0.4f ? 0 : 3;
+            if (attackType == lastAttackType)
+                attackType = attackType == 0 ? 3 : 0; // Scambia se è lo stesso
+        }
+        else if (distanceToPlayer < rangedAttackRange)
+        {
+            // Se a media distanza: Proiettile o Cubi dall'alto (ma non lo stesso del turno precedente)
+            attackType = Random.value > 0.5f ? 1 : 2;
+            if (attackType == lastAttackType)
+                attackType = attackType == 1 ? 2 : 1; // Scambia se è lo stesso
         }
         else
         {
-            yield return StartCoroutine(RangedProjectileAttack());
+            // Se molto lontano: solo Cubi dall'alto
+            attackType = 2;
+        }
+
+        lastAttackType = attackType;
+
+        switch (attackType)
+        {
+            case 0: yield return StartCoroutine(MeleeDashAttack()); break;
+            case 1: yield return StartCoroutine(RangedProjectileAttack()); break;
+            case 2: yield return StartCoroutine(FallingCubesAttack()); break;
+            case 3: yield return StartCoroutine(JumpSlamAttack()); break;
         }
 
         // Reset del Cooldown e ritorno allo stato di caccia
@@ -122,43 +150,64 @@ public class BossScriptTemplate : MonoBehaviour
         currentState = BossState.Chasing;
     }
 
-    // --- ATTACCO 1: Fendente con Scatto (tipo "False Knight" o "Hornet") ---
+    // --- ATTACCO 1: Fendente con Scatto ---
     private IEnumerator MeleeDashAttack()
     {
-        // 1. Anticipazione (Il boss si ferma, carica l'attacco)
-        // anim.SetTrigger("MeleeAnticipation");
-        yield return new WaitForSeconds(0.5f); // Tempo di carica del colpo
-
-        // 2. Esecuzione (Scatto in avanti)
-        // anim.SetTrigger("MeleeAttack");
+        yield return new WaitForSeconds(0.4f); // Carica
         float dashDirection = isFacingRight ? 1f : -1f;
         rb.linearVelocity = new Vector2(dashDirection * dashForce, rb.linearVelocity.y);
-
-        yield return new WaitForSeconds(0.2f); // Durata dello scatto
+        yield return new WaitForSeconds(0.25f);
         rb.linearVelocity = Vector2.zero;
-
-        // 3. Recupero (Il boss riprende fiato)
         yield return new WaitForSeconds(0.3f);
     }
 
-    // --- ATTACCO 2: Lancio di un Proiettile (tipo "Soul Master") ---
+    // --- ATTACCO 2: Lancio di un Proiettile (Più veloce) ---
     private IEnumerator RangedProjectileAttack()
     {
-        // 1. Anticipazione
-        // anim.SetTrigger("RangedAnticipation");
-        yield return new WaitForSeconds(0.6f);
-
-        // 2. Esecuzione (Istanzia il proiettile)
-        // anim.SetTrigger("RangedAttack");
+        yield return new WaitForSeconds(0.5f);
         if (projectilePrefab != null && attackPoint != null)
         {
             GameObject obj = Instantiate(projectilePrefab, attackPoint.position, Quaternion.identity);
-            // Configura la direzione del proiettile (puoi passare una direzione allo script del proiettile stesso)
             Vector2 shootDir = (player.position - attackPoint.position).normalized;
-            obj.GetComponent<Rigidbody2D>().linearVelocity = shootDir * 10f; // Esempio di velocità proiettile
+            
+            Rigidbody2D projRb = obj.GetComponent<Rigidbody2D>();
+            if (projRb != null) projRb.linearVelocity = shootDir * projectileSpeed;
+            
+            DoDamage dd = obj.GetComponent<DoDamage>();
+            if (dd != null) dd.SetShooter(gameObject);
         }
+        yield return new WaitForSeconds(0.3f);
+    }
 
-        yield return new WaitForSeconds(0.4f); // Fine animazione
+    // --- ATTACCO 3: Cubi dall'alto ---
+    private IEnumerator FallingCubesAttack()
+    {
+        yield return new WaitForSeconds(0.5f);
+        int cubeCount = 6;
+        for (int i = 0; i < cubeCount; i++)
+        {
+            if (fallingCubePrefab != null)
+            {
+                float xOffset = Random.Range(-6f, 6f);
+                Vector3 spawnPos = new Vector3(player.position.x + xOffset, transform.position.y + 12f, 0);
+                Instantiate(fallingCubePrefab, spawnPos, Quaternion.identity);
+            }
+            yield return new WaitForSeconds(0.25f);
+        }
+        yield return new WaitForSeconds(0.5f);
+    }
+
+    // --- ATTACCO 4: Salto e Schiacciata (Jump Slam) ---
+    private IEnumerator JumpSlamAttack()
+    {
+        yield return new WaitForSeconds(0.3f);
+        float xDist = player.position.x - transform.position.x;
+        rb.linearVelocity = new Vector2(xDist * 1.2f, jumpForce);
+        yield return new WaitUntil(() => rb.linearVelocity.y < 0);
+        rb.linearVelocity = new Vector2(0, -jumpForce * 2f);
+        yield return new WaitForSeconds(0.7f);
+        rb.linearVelocity = Vector2.zero;
+        yield return new WaitForSeconds(0.4f);
     }
 
     // Visualizzazione dei Raycast/Range nell'editor di Unity
@@ -166,6 +215,9 @@ public class BossScriptTemplate : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, rangedAttackRange);
 
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, meleeRange);
